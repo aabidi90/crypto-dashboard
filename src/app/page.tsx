@@ -1,101 +1,171 @@
-import Image from "next/image";
+"use client";
 
-export default function Home() {
+import { faker } from '@faker-js/faker';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { Badge } from '@/components/ui/badge';
+import { ArrowUpIcon, ArrowDownIcon, DollarSignIcon, TrendingUpIcon, WalletIcon } from 'lucide-react';
+import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
+
+// Generate fake crypto data
+const generatePortfolioData = () => {
+  return {
+    totalBalance: faker.finance.amount({ min: 10000, max: 100000, dec: 2 }),
+    totalTrades: faker.number.int({ min: 50, max: 500 }),
+    portfolioChange: faker.finance.amount({ min: -15, max: 25, dec: 2 }),
+    activePositions: faker.number.int({ min: 5, max: 15 }),
+  };
+};
+
+const generateTransactions = (count: number) => {
+  return Array.from({ length: count }, () => ({
+    id: faker.string.uuid(),
+    type: faker.helpers.arrayElement(['buy', 'sell']),
+    asset: faker.helpers.arrayElement(['BTC', 'ETH', 'ADA', 'SOL', 'MATIC', 'LINK', 'DOT']),
+    amount: faker.finance.amount({ min: 0.001, max: 10, dec: 6 }),
+    price: faker.finance.amount({ min: 100, max: 50000, dec: 2 }),
+    timestamp: faker.date.recent({ days: 30 }),
+    total: faker.finance.amount({ min: 50, max: 5000, dec: 2 }),
+  }));
+};
+
+const generateChartData = () => {
+  const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+  return months.slice(0, 6).map(month => ({
+    month,
+    value: parseFloat(faker.finance.amount({ min: 5000, max: 15000, dec: 0 })),
+  }));
+};
+
+export default function Dashboard() {
+  const portfolioData = generatePortfolioData();
+  const transactions = generateTransactions(10);
+  const chartData = generateChartData();
+
   return (
-    <div className="grid grid-rows-[20px_1fr_20px] items-center justify-items-center min-h-screen p-8 pb-20 gap-16 sm:p-20 font-[family-name:var(--font-geist-sans)]">
-      <main className="flex flex-col gap-8 row-start-2 items-center sm:items-start">
-        <Image
-          className="dark:invert"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={180}
-          height={38}
-          priority
-        />
-        <ol className="list-inside list-decimal text-sm text-center sm:text-left font-[family-name:var(--font-geist-mono)]">
-          <li className="mb-2">
-            Get started by editing{" "}
-            <code className="bg-black/[.05] dark:bg-white/[.06] px-1 py-0.5 rounded font-semibold">
-              src/app/page.tsx
-            </code>
-            .
-          </li>
-          <li>Save and see your changes instantly.</li>
-        </ol>
-
-        <div className="flex gap-4 items-center flex-col sm:flex-row">
-          <a
-            className="rounded-full border border-solid border-transparent transition-colors flex items-center justify-center bg-foreground text-background gap-2 hover:bg-[#383838] dark:hover:bg-[#ccc] text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className="dark:invert"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={20}
-              height={20}
-            />
-            Deploy now
-          </a>
-          <a
-            className="rounded-full border border-solid border-black/[.08] dark:border-white/[.145] transition-colors flex items-center justify-center hover:bg-[#f2f2f2] dark:hover:bg-[#1a1a1a] hover:border-transparent text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5 sm:min-w-44"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Read our docs
-          </a>
+    <div className="min-h-screen bg-gray-50 p-6">
+      <div className="max-w-7xl mx-auto">
+        {/* Header */}
+        <div className="mb-8">
+          <h1 className="text-3xl font-bold text-gray-900">Crypto Dashboard</h1>
+          <p className="text-gray-600 mt-2">Track your cryptocurrency portfolio and recent transactions</p>
         </div>
-      </main>
-      <footer className="row-start-3 flex gap-6 flex-wrap items-center justify-center">
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/file.svg"
-            alt="File icon"
-            width={16}
-            height={16}
-          />
-          Learn
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/window.svg"
-            alt="Window icon"
-            width={16}
-            height={16}
-          />
-          Examples
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/globe.svg"
-            alt="Globe icon"
-            width={16}
-            height={16}
-          />
-          Go to nextjs.org →
-        </a>
-      </footer>
+
+        {/* Stats Cards Grid */}
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+          {/* Total Balance Card */}
+          <Card>
+            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+              <CardTitle className="text-sm font-medium">Total Portfolio</CardTitle>
+              <WalletIcon className="h-4 w-4 text-muted-foreground" />
+            </CardHeader>
+            <CardContent>
+              <div className="text-2xl font-bold">${portfolioData.totalBalance}</div>
+              <p className="text-xs text-muted-foreground">
+                {parseFloat(portfolioData.portfolioChange) >= 0 ? '+' : ''}
+                {portfolioData.portfolioChange}% from last month
+              </p>
+            </CardContent>
+          </Card>
+
+          {/* Total Trades Card */}
+          <Card>
+            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+              <CardTitle className="text-sm font-medium">Total Trades</CardTitle>
+              <TrendingUpIcon className="h-4 w-4 text-muted-foreground" />
+            </CardHeader>
+            <CardContent>
+              <div className="text-2xl font-bold">{portfolioData.totalTrades}</div>
+              <p className="text-xs text-muted-foreground">+12% from last month</p>
+            </CardContent>
+          </Card>
+
+          {/* Active Positions Card */}
+          <Card>
+            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+              <CardTitle className="text-sm font-medium">Active Positions</CardTitle>
+              <DollarSignIcon className="h-4 w-4 text-muted-foreground" />
+            </CardHeader>
+            <CardContent>
+              <div className="text-2xl font-bold">{portfolioData.activePositions}</div>
+              <p className="text-xs text-muted-foreground">Across 8 cryptocurrencies</p>
+            </CardContent>
+          </Card>
+
+          {/* Portfolio Change Card */}
+          <Card>
+            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+              <CardTitle className="text-sm font-medium">24h Change</CardTitle>
+              {parseFloat(portfolioData.portfolioChange) >= 0 ? (
+                <ArrowUpIcon className="h-4 w-4 text-green-600" />
+              ) : (
+                <ArrowDownIcon className="h-4 w-4 text-red-600" />
+              )}
+            </CardHeader>
+            <CardContent>
+              <div className={`text-2xl font-bold ${parseFloat(portfolioData.portfolioChange) >= 0 ? 'text-green-600' : 'text-red-600'}`}>
+                {parseFloat(portfolioData.portfolioChange) >= 0 ? '+' : ''}{portfolioData.portfolioChange}%
+              </div>
+              <p className="text-xs text-muted-foreground">Portfolio performance</p>
+            </CardContent>
+          </Card>
+        </div>
+
+        {/* Portfolio Chart */}
+        <Card className="mb-8">
+          <CardHeader>
+            <CardTitle>Portfolio Performance</CardTitle>
+            <CardDescription>Monthly portfolio value over the last 6 months</CardDescription>
+          </CardHeader>
+          <CardContent>
+            <div className="h-80">
+              <ResponsiveContainer width="100%" height="100%">
+                <BarChart data={chartData}>
+                  <CartesianGrid strokeDasharray="3 3" />
+                  <XAxis dataKey="month" />
+                  <YAxis />
+                  <Tooltip
+                    formatter={(value) => [`$${value.toLocaleString()}`, 'Portfolio Value']}
+                  />
+                  <Bar dataKey="value" fill="#3b82f6" />
+                </BarChart>
+              </ResponsiveContainer>
+            </div>
+          </CardContent>
+        </Card>
+
+        {/* Recent Transactions */}
+        <Card>
+          <CardHeader>
+            <CardTitle>Recent Transactions</CardTitle>
+            <CardDescription>Your latest cryptocurrency trades</CardDescription>
+          </CardHeader>
+          <CardContent>
+            <div className="space-y-4">
+              {transactions.map((transaction) => (
+                <div key={transaction.id} className="flex items-center justify-between border-b pb-4 last:border-b-0">
+                  <div className="flex items-center space-x-4">
+                    <Badge variant={transaction.type === 'buy' ? 'default' : 'destructive'} className="w-12 justify-center">
+                      {transaction.type.toUpperCase()}
+                    </Badge>
+                    <div>
+                      <p className="font-medium">{transaction.asset}</p>
+                      <p className="text-sm text-gray-500">
+                        {transaction.amount} {transaction.asset} @ ${transaction.price}
+                      </p>
+                    </div>
+                  </div>
+                  <div className="text-right">
+                    <p className="font-medium">${transaction.total}</p>
+                    <p className="text-sm text-gray-500">
+                      {transaction.timestamp.toLocaleDateString()}
+                    </p>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </CardContent>
+        </Card>
+      </div>
     </div>
   );
 }
